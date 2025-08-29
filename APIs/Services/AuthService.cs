@@ -50,13 +50,12 @@ namespace APIs.Services
 
         public async Task<AuthLoginResponse?> LoginUser(AuthLoginRequest request)
         {
-            var user = await _unitOfWork.Persons.GetByEmail(request.Email);
-            if (user == null) 
-                return null;
+            var user = await _unitOfWork.Persons.GetByEmail(request.Email) ?? throw new NullReferenceException();
 
             bool isCorrectPassword = await ComparePassowrds(request.Password, user.Password!);
-            if (!isCorrectPassword) 
-                return null;
+
+            if (!isCorrectPassword)
+                throw new UnauthorizedAccessException();
 
             string token = await GenerateAccessToken(user.Email!, user.Role!);
 
@@ -80,17 +79,17 @@ namespace APIs.Services
             var emailFlag = await _unitOfWork.Persons.GetByEmail(request.Email);
 
             if (emailFlag is not null)
-                return null;
+                throw new ArgumentException("This email already exists!");
 
             var mobileNumberFlag = await _unitOfWork.Persons.GetByMobileNumber(request.MobileNumber);
 
             if (mobileNumberFlag is not null)
-                return null;
+                throw new ArgumentException("This mobile number already exists!");
 
             var socialSecurityNumberFlag = await _unitOfWork.Persons.GetBySocialSecurityNumber(request.SocialSecurityNumber);
 
             if (socialSecurityNumberFlag is not null)
-                return null;
+                throw new ArgumentException("This social security number already exists!");
 
             var hashedPassword = await HashPassword(request.Password);
 

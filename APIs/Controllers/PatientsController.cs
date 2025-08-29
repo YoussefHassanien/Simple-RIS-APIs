@@ -1,8 +1,10 @@
 ﻿using Core.DTOs.Patient.Details;
+using Core.DTOs.Patient.Edit;
 using Core.DTOs.Patient.Register;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace APIs.Controllers
 {
@@ -17,24 +19,73 @@ namespace APIs.Controllers
         [Authorize(Roles = "patient")]
         public async Task<ActionResult<PatientDetailsResponse>> GetPatinetDetails(uint id)
         {
-            var response = await _patientService.GetPatientDetails(id);
+            try
+            {
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (response is null)
-                return NotFound();
+                var response = await _patientService.GetPatientDetails(id, email!);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (NullReferenceException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch(Exception)
+            {
+                return StatusCode(500);
+            }
+
         }
 
         [HttpPost("register")]
         [Authorize(Roles = "patient")]
         public async Task<ActionResult<PatientRegisterResponse>> AddPatient(PatientRegisterRequest request)
         {
-            var response = await _patientService.AddPatient(request);
+            try
+            {
+                var response = await _patientService.AddPatient(request);
 
-            if (response is null)
+                return Created(string.Empty, response);
+            }
+            catch (InvalidOperationException)
+            { 
                 return BadRequest("Could not add this patient!");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
 
-            return Created(string.Empty, response);
+        [HttpPut("edit")]
+        [Authorize(Roles = "patient")]
+        public async Task<ActionResult<PatientEditResponse>> EditPatientInfo(PatientEditRequest request)
+        {
+            try
+            {
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+                var response = await _patientService.EditPatient(request, email!);
+
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Could not update the pateint info!");
+            }
         }
     }
 }

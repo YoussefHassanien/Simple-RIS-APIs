@@ -1,4 +1,6 @@
-﻿namespace Core.DTOs.Patient.Register
+﻿using Core.Interfaces;
+
+namespace Core.DTOs.Patient.Register
 {
     public class PatientRegisterResponse
     {

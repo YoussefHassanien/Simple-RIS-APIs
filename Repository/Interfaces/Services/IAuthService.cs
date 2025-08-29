@@ -1,5 +1,4 @@
-﻿using Core.DTOs;
-using Core.DTOs.Auth.Login;
+﻿using Core.DTOs.Auth.Login;
 using Core.DTOs.Auth.Register;
 
 namespace Core.Interfaces.Services

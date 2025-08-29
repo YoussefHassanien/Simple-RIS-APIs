@@ -2,6 +2,7 @@
 using Core.Interfaces.Services;
 using Core.DTOs.Auth.Login;
 using Core.DTOs.Auth.Register;
+using Azure.Core;
 
 namespace APIs.Controllers
 {
@@ -16,25 +17,48 @@ namespace APIs.Controllers
         public async Task<ActionResult<AuthLoginResponse>> Login(AuthLoginRequest request)
 
         {
-            var response = await _authService.LoginUser(request);
+            try
+            {
+                var response = await _authService.LoginUser(request);
 
-            if (response is null) 
-                return NotFound("Wrong email or password!");
+                return Created(string.Empty, response);
+            }
+            catch (NullReferenceException)
+            {
+                return BadRequest("Wrong email or password!");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return BadRequest("Wrong email or password!");
+            }
+            catch (Exception) 
+            {
+                return StatusCode(500);
+            }
 
-            return Created(string.Empty, response);
+
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult<AuthLoginResponse>> Login(AuthRegistrationRequest request)
+        public async Task<ActionResult<AuthLoginResponse>> Register(AuthRegistrationRequest request)
 
         {
-            var response = await _authService.RegisterUser(request);
+            try
+            {
+                var response = await _authService.RegisterUser(request);
 
-            if (response is null)            
-                return BadRequest("This account already exists");
-            
-            return Created(string.Empty, response);
+                return Created(string.Empty, response);
+            }
+            catch (ArgumentException ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+
         }
     }
 }

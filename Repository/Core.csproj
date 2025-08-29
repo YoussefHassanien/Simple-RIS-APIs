@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Patient\Edit\" />
     <Folder Include="DTOs\Patient\Delete\" />
   </ItemGroup>
 
