@@ -79,17 +79,17 @@ namespace APIs.Services
         {
             var emailFlag = await _unitOfWork.Persons.GetByEmail(request.Email);
 
-            if (emailFlag != null)
+            if (emailFlag is not null)
                 return null;
 
             var mobileNumberFlag = await _unitOfWork.Persons.GetByMobileNumber(request.MobileNumber);
 
-            if (mobileNumberFlag != null)
+            if (mobileNumberFlag is not null)
                 return null;
 
             var socialSecurityNumberFlag = await _unitOfWork.Persons.GetBySocialSecurityNumber(request.SocialSecurityNumber);
 
-            if (socialSecurityNumberFlag != null)
+            if (socialSecurityNumberFlag is not null)
                 return null;
 
             var hashedPassword = await HashPassword(request.Password);

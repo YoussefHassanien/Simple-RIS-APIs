@@ -1,4 +1,5 @@
 ﻿using Core.DTOs.Patient.Details;
+using Core.DTOs.Patient.Register;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,18 @@ namespace APIs.Controllers
                 return NotFound();
 
             return Ok(response);
+        }
 
+        [HttpPost("register")]
+        [Authorize(Roles = "patient")]
+        public async Task<ActionResult<PatientRegisterResponse>> AddPatient(PatientRegisterRequest request)
+        {
+            var response = await _patientService.AddPatient(request);
+
+            if (response is null)
+                return BadRequest("Could not add this patient!");
+
+            return Created(string.Empty, response);
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Core.Models;
 using Core;
 using Core.Interfaces.Repositories;
+using Data.Repositories;
 
-namespace Data.Repositories
+namespace Data
 {
     public class UnitOfWork : IUnitOfWork
     {

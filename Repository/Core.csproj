@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Patient\Edit\" />
     <Folder Include="DTOs\Patient\Delete\" />
-    <Folder Include="DTOs\Patient\Register\" />
   </ItemGroup>
 
 </Project>

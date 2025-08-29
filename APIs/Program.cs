@@ -1,6 +1,5 @@
 using APIs.Configs;
 using Data;
-using Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;

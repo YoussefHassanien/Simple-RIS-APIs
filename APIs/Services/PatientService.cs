@@ -1,5 +1,7 @@
 ﻿using Core;
+using Core.Models;
 using Core.DTOs.Patient.Details;
+using Core.DTOs.Patient.Register;
 using Core.Interfaces.Services;
 
 namespace APIs.Services
@@ -39,6 +41,38 @@ namespace APIs.Services
             };
 
             return dto;
+        }
+
+        public async Task<PatientRegisterResponse?> AddPatient(PatientRegisterRequest request)
+        {
+            var patient = new Patient
+            {
+                PersonId = (int)request.PersonId,
+                IsVip = request.IsVip,
+            };
+
+            await _unitOfWork.Patients.Add(patient);
+            int affectedRows = _unitOfWork.Complete();
+
+            if (affectedRows != 1)
+                return null;
+
+            var person = await _unitOfWork.Persons.GetById(request.PersonId, ["Patient"]);
+
+            var response = new PatientRegisterResponse
+            {
+                PersonId = person!.Id,
+                Email = person!.Email!,
+                Name = $"{person.FirstName} {person.LastName}",
+                MobileNumber = person!.MobileNumber,
+                Gender = person!.Gender,
+                SocialSecurityNumber = person!.SocialSecurityNumber,
+                DateOfBirth = person!.DateOfBirth,
+                IsVip = person!.Patient!.IsVip,
+                IsActive = person!.Patient.IsActive,
+            };
+
+            return response;
         }
 
     }

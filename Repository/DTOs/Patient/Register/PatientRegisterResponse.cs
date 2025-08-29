@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.DTOs.Patient.Register
+﻿namespace Core.DTOs.Patient.Register
 {
-    internal class PatientRegisterResponse
+    public class PatientRegisterResponse
     {
+        public required int PersonId { get; set; }
+        public required string Email { get; set; }
+        public required string Name { get; set; }
+        public required string MobileNumber { get; set; }
+        public string? Gender { get; set; }
+        public string? SocialSecurityNumber { get; set; }
+        public required DateOnly DateOfBirth { get; set; }
+        public bool? IsVip { get; set; }
+        public bool? IsActive { get; set; }
     }
 }
