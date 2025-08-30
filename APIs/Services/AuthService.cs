@@ -57,7 +57,15 @@ namespace APIs.Services
             if (!isCorrectPassword)
                 throw new UnauthorizedAccessException();
 
-            string token = await GenerateAccessToken(user.Email!, user.Role!);
+            if(user.Role == "patient")
+            {
+                var patientData = await _unitOfWork.PatientData.GetByPersonId((uint)user.Id);
+
+                if (!(bool)patientData!.IsActive!)
+                    throw new UnauthorizedAccessException();
+            }
+
+            string token = await GenerateAccessToken(user.Email!, user.Role!, (uint)user.Id);
 
             var response = new AuthLoginResponse
             {
@@ -111,7 +119,7 @@ namespace APIs.Services
             var newUser = await _unitOfWork.Persons.Add(person);
             _unitOfWork.Complete();
 
-            string token = await GenerateAccessToken(newUser!.Email!, newUser.Role!);
+            string token = await GenerateAccessToken(newUser!.Email!, newUser.Role!, (uint)newUser.Id);
 
             var response = new AuthLoginResponse
             {
@@ -128,7 +136,7 @@ namespace APIs.Services
             return response;
         }
 
-        private Task<string> GenerateAccessToken(string email, string role) 
+        private Task<string> GenerateAccessToken(string email, string role, uint id) 
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -140,6 +148,7 @@ namespace APIs.Services
                     SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(
                 [
+                    new("id", id.ToString()),
                     new(ClaimTypes.Email, email),
                     new(ClaimTypes.Role, role)
                 ])

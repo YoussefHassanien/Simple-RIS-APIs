@@ -4,7 +4,6 @@ using Core.DTOs.Patient.Details;
 using Core.DTOs.Patient.Register;
 using Core.Interfaces.Services;
 using Core.DTOs.Patient.Edit;
-using System.Reflection.Metadata.Ecma335;
 
 namespace APIs.Services
 {
@@ -12,14 +11,22 @@ namespace APIs.Services
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<PatientDetailsResponse?> GetPatientDetails(uint personId, string email)
+        private static uint? ParseId(string id)
         {
-            var person = await _unitOfWork.Persons.GetByEmail(email);
+            if (!uint.TryParse(id, out var parsedId))
+                return null;
 
-            if (person == null || person.Id != personId)
+            return parsedId;
+        }
+
+        public async Task<PatientDetailsResponse?> GetPatientDetails(string id)
+        {
+            uint? personId = ParseId(id) ?? throw new ArgumentException("Invalid id");
+                
+            var patientData = await _unitOfWork.PatientData.GetByPersonId((uint)personId);
+
+            if (patientData is null || !(bool)patientData.IsActive!)
                 throw new UnauthorizedAccessException();
-
-            var patientData = await _unitOfWork.PatientData.GetByPersonId(personId) ?? throw new NullReferenceException("Patient not found!");
 
             var dto = new PatientDetailsResponse
             {
@@ -41,7 +48,7 @@ namespace APIs.Services
                 ServiceCost = patientData.ServiceCost,
                 ServiceCurrency = patientData.ServiceCurrency,
                 DoctorId = patientData.DoctorId,
-                DoctorName = $"{patientData.DoctorFirstName} {patientData.DoctorLastName}"
+                DoctorName = patientData.DoctorFirstName is not null && patientData.DoctorLastName is not null ? $"{patientData.DoctorFirstName} {patientData.DoctorLastName}" : null,
             };
 
             return dto;
@@ -49,6 +56,8 @@ namespace APIs.Services
 
         public async Task<PatientRegisterResponse?> AddPatient(PatientRegisterRequest request)
         {
+            var person = await _unitOfWork.Persons.GetById(request.PersonId) ?? throw new NullReferenceException($"Person with id: {request.PersonId} not found!");
+
             var patient = new Patient
             {
                 PersonId = (int)request.PersonId,
@@ -61,8 +70,6 @@ namespace APIs.Services
             if (affectedRows != 1)
                 throw new InvalidOperationException();
 
-            var person = await _unitOfWork.Persons.GetById(request.PersonId, ["Patient"]);
-
             var response = new PatientRegisterResponse
             {
                 PersonId = person!.Id,
@@ -72,16 +79,17 @@ namespace APIs.Services
                 Gender = person!.Gender,
                 SocialSecurityNumber = person!.SocialSecurityNumber,
                 DateOfBirth = person!.DateOfBirth,
-                IsVip = person!.Patient!.IsVip,
-                IsActive = person!.Patient.IsActive,
+                IsVip = patient.IsVip,
             };
 
             return response;
         }
 
-        public async Task<PatientEditResponse?> EditPatient(PatientEditRequest request, string email)
+        public async Task<PatientEditResponse?> EditPatient(PatientEditRequest request, string id)
         {
-            var person = await _unitOfWork.Persons.GetByEmail(email) ?? throw new UnauthorizedAccessException();
+            uint? personId = ParseId(id) ?? throw new ArgumentException("Invalid id");
+
+            var person = await _unitOfWork.Persons.GetById((uint)personId!) ?? throw new NullReferenceException($"Patient with person id: {id} not found!"); 
                 
             if (!string.IsNullOrEmpty(request.FirstName))
                 person.FirstName = request.FirstName;
@@ -93,7 +101,7 @@ namespace APIs.Services
             {
                 var mobileNumberFlag = await _unitOfWork.Persons.GetByMobileNumber(request.MobileNumber);
 
-                if (mobileNumberFlag != null)
+                if (mobileNumberFlag is not null)
                     throw new ArgumentException("This mobile number already exists");
                 else
                     person.MobileNumber = request.MobileNumber;
@@ -121,6 +129,28 @@ namespace APIs.Services
                 DateOfBirth = person.DateOfBirth,
                 Email = person.Email,
             };
+        }
+
+        public async Task<bool> DeletePatient(string id)
+        {
+            uint? personId = ParseId(id) ?? throw new ArgumentException("Invalid id");
+
+            var person = await _unitOfWork.Persons.GetById((uint)personId, ["Patient"]) ?? throw new NullReferenceException();
+
+            var deletedPatient = new Patient
+            {
+                PersonId = person.Id,
+                IsVip = person.Patient!.IsVip,
+                IsActive = false,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            _unitOfWork.Patients.Update(deletedPatient);
+            int affectedRows = _unitOfWork.Complete();
+
+            return affectedRows == 2;
+            
+                
         }
 
     }

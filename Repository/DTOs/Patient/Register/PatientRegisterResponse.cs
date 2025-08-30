@@ -12,6 +12,5 @@ namespace Core.DTOs.Patient.Register
         public string? SocialSecurityNumber { get; set; }
         public required DateOnly DateOfBirth { get; set; }
         public bool? IsVip { get; set; }
-        public bool? IsActive { get; set; }
     }
 }

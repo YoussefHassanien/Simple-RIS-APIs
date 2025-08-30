@@ -6,8 +6,9 @@ namespace Core.Interfaces.Services
 {
     public interface IPatientService
     {
-        Task<PatientDetailsResponse?> GetPatientDetails(uint personId, string email);
+        Task<PatientDetailsResponse?> GetPatientDetails(string personId);
         Task<PatientRegisterResponse?> AddPatient(PatientRegisterRequest request);
-        Task<PatientEditResponse?> EditPatient(PatientEditRequest request, string email);
+        Task<PatientEditResponse?> EditPatient(PatientEditRequest request, string personId);
+        Task<bool> DeletePatient(string personId);
     }
 }
