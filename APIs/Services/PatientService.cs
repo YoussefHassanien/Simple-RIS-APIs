@@ -56,7 +56,10 @@ namespace APIs.Services
 
         public async Task<PatientRegisterResponse?> AddPatient(PatientRegisterRequest request)
         {
-            var person = await _unitOfWork.Persons.GetById(request.PersonId) ?? throw new NullReferenceException($"Person with id: {request.PersonId} not found!");
+            var person = await _unitOfWork.Persons.GetById(request.PersonId, ["Patient"]) ?? throw new NullReferenceException($"Person with id: {request.PersonId} not found!");
+
+            if (person.Patient is not null)
+                throw new ArgumentException("This patient already exists");
 
             var patient = new Patient
             {
@@ -70,7 +73,7 @@ namespace APIs.Services
             if (affectedRows != 1)
                 throw new InvalidOperationException();
 
-            var response = new PatientRegisterResponse
+            return new PatientRegisterResponse
             {
                 PersonId = person!.Id,
                 Email = person!.Email!,
@@ -82,7 +85,7 @@ namespace APIs.Services
                 IsVip = patient.IsVip,
             };
 
-            return response;
+            
         }
 
         public async Task<PatientEditResponse?> EditPatient(PatientEditRequest request, string id)

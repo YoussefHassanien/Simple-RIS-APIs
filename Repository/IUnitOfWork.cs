@@ -8,7 +8,7 @@ namespace Core
         IBaseRepository<Patient> Patients { get; }
         IPersonRepository Persons { get; }
         IBaseRepository<Doctor> Doctors { get; }
-        IBaseRepository<Study> Studies { get; }
+        IStudyRepository Studies { get; }
         IBaseRepository<Service> Services { get; }
         IPatientDataRepository PatientData { get; }
 

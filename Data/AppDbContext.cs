@@ -230,6 +230,11 @@ namespace Data
                 entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
                 entity.Property(e => e.PatientId).HasColumnName("patient_id");
                 entity.Property(e => e.ServiceId).HasColumnName("service_id");
+                entity.Property(e => e.Status)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasDefaultValue("pending")
+                    .HasColumnName("status");
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("updated_at");

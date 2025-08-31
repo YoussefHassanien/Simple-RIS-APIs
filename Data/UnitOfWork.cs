@@ -12,7 +12,7 @@ namespace Data
         public IBaseRepository<Patient> Patients { get; private set; }
         public IPersonRepository Persons { get; private set; }
         public IBaseRepository<Doctor> Doctors { get; private set; }
-        public IBaseRepository<Study> Studies { get; private set; }
+        public IStudyRepository Studies { get; private set; }
         public IBaseRepository<Service> Services { get; private set; }
         public IPatientDataRepository PatientData { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Data
             Patients = new BaseRepository<Patient>(_context);
             Persons = new PersonRepository(_context);
             Doctors = new BaseRepository<Doctor>(_context);
-            Studies = new BaseRepository<Study>(_context);
+            Studies = new StudyRepository(_context);
             Services = new BaseRepository<Service>(_context);
             PatientData = new PatientDataRepository(_context);
 
