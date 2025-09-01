@@ -80,7 +80,14 @@ namespace APIs.Services
 
         public async Task<StudyCreateResponse?> EditStudy(string studyId, StudyEditRequest request, string patientPersonId)
         {
-            var study = await _unitOfWork.Studies.GetById(studyId) ?? throw new NullReferenceException($"Study with id: {studyId} not found!");
+            uint parsedStudyId = ParseId(studyId) ?? throw new ArgumentException("Invalid study id");
+
+            var study = await _unitOfWork.Studies.GetById(parsedStudyId, ["Patient.Person"]) ?? throw new NullReferenceException($"Study with id: {parsedStudyId} not found!");
+
+            uint parsedPatientPersonId = ParseId(patientPersonId) ?? throw new ArgumentException("Invalid patient person id");
+
+            if(study.Patient.Person.Id != parsedPatientPersonId)
+                throw new UnauthorizedAccessException();
 
             if (request.DoctorId is not null)
                 study.DoctorId = (int)request.DoctorId;
@@ -94,7 +101,7 @@ namespace APIs.Services
             if (affectedRows != 1)
                 throw new InvalidOperationException("Could not edit study data");
 
-            var updatedStudy = await _unitOfWork.Studies.GetById(studyId, ["Doctor.Person", "Patient.Person", "Service"]);
+            var updatedStudy = await _unitOfWork.Studies.GetById(parsedStudyId, ["Doctor.Person", "Patient.Person", "Service"]);
 
             return new StudyCreateResponse
             {
@@ -115,7 +122,14 @@ namespace APIs.Services
 
         public async Task<bool> CancelStudy(string studyId, string patientPersonId)
         {
-            var study = await _unitOfWork.Studies.GetById(studyId) ?? throw new NullReferenceException($"Study with id: {studyId} not found!");
+            uint parsedStudyId = ParseId(studyId) ?? throw new ArgumentException("Invalid study id");
+
+            var study = await _unitOfWork.Studies.GetById(parsedStudyId, ["Patient.Person"]) ?? throw new NullReferenceException($"Study with id: {parsedStudyId} not found!");
+
+            uint parsedPatientPersonId = ParseId(patientPersonId) ?? throw new ArgumentException("Invalid patient personId id");
+
+            if (study.Patient.Person.Id != parsedPatientPersonId)
+                throw new UnauthorizedAccessException();
 
             if (study.Status == "completed")
                 throw new ArgumentException("Can't cancel completed study");
