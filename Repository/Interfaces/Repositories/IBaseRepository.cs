@@ -5,7 +5,7 @@
         Task<T?> GetById(uint id, string[]? includes = null);
         Task<T?> Add(T entity);
         T Update(T entity);
-        Task<bool> Delete(uint id);
+        T Delete(T entity);
         
     }
 }

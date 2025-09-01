@@ -8,6 +8,7 @@ namespace Core.DTOs.Auth.Login
         [EmailAddress]
         [MaxLength(256)]
         public required string Email { get; set; }
+
         [Required]
         [MaxLength(256)]
         public required string Password { get; set; }

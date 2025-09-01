@@ -32,14 +32,11 @@ namespace Data.Repositories
             return entity;
         }
 
-        public async Task<bool> Delete(uint id)
+        public T Delete(T entity)
         {
-            var entity = await _context.Set<T>().FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
-            if (entity == null)
-                return false;
 
             _context.Set<T>().Remove(entity);
-            return true;
+            return entity;
         }
 
     }

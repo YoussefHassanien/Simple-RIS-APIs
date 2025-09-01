@@ -42,6 +42,7 @@ namespace APIs
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IPatientService, PatientService>();
             builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IStudyService, StudyService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

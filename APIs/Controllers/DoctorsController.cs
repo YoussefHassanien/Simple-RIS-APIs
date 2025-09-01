@@ -1,9 +1,7 @@
-﻿using APIs.Services;
-using Core.DTOs.Doctor.Edit;
+﻿using Core.DTOs.Doctor.Edit;
 using Core.DTOs.Doctor.Register;
 using Core.DTOs.Doctor.Studies;
 using Core.Interfaces.Services;
-using Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
