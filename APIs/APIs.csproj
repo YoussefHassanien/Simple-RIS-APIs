@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Data\Data.csproj" />
-    <ProjectReference Include="..\Repository\Core.csproj" />
   </ItemGroup>
 
 </Project>

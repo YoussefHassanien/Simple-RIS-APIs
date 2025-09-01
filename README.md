@@ -42,8 +42,8 @@ RIS/
 ├── Core/                   # Core Domain Layer
 │   ├── DTOs/                   # Data Transfer Objects
 │   ├── Interfaces/             # Contracts for services & repos
-|   |   ├── Controllers/            
-│   |   └── Services/               
+|   |   ├── Controllers/
+│   |   └── Services/
 │   └── Models/                 # Domain entities
 |   └── IUnitOfWork             # Unit of work interface
 └── Data/                   # Data Access Layer
@@ -96,7 +96,7 @@ The system uses the following main entities:
 - POST `/api/Studies` - Create new study (Patients)
 - PUT `/api/Studies` - Update study info (Patients)
 - PUT `/api/Studies/complete/{studyId}` - Mark study status as completed (Doctors)
-- Delete `/api/Studies/cancel/{studyId}` - Cancel a pending study (Patients)
+- DELETE `/api/Studies/cancel/{studyId}` - Cancel a pending study (Patients)
 
 ## Authentication & Authorization
 
