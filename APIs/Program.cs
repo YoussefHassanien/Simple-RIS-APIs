@@ -21,6 +21,18 @@ namespace APIs
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowVNATable", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7024", "http://localhost:7024")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
+
             builder.Services.AddDbContext<AppDbContext>(cfg => cfg.UseSqlServer(builder.Configuration["Database:ConnectionString"],
                 b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)).UseLazyLoadingProxies());
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -53,6 +65,8 @@ namespace APIs
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowVNATable");
 
             app.UseAuthorization();
 

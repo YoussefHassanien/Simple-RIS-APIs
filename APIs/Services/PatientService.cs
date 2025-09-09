@@ -54,6 +54,42 @@ namespace APIs.Services
             return dto;
         }
 
+        public async Task<List<PatientDetailsResponse>> GetPatientsDetails(uint page = 1, uint limit = 10)
+        {
+
+            var patienstData = await _unitOfWork.PatientData.GetAll(page, limit);
+
+            var response = new List<PatientDetailsResponse>();
+
+            foreach (var patient in patienstData)
+            {
+                response.Add(new PatientDetailsResponse
+                {
+                    PersonId = patient.PersonId,
+                    PatientName = $"{patient.FirstName} {patient.LastName}",
+                    MobileNumber = patient.MobileNumber,
+                    DateOfBirth = patient.DateOfBirth,
+                    Gender = patient.Gender,
+                    SocialSecurityNumber = patient.SocialSecurityNumber,
+                    PatientId = patient.PatientId,
+                    IsVip = patient.IsVip,
+                    IsActive = patient.IsActive,
+                    StudyId = patient.StudyId,
+                    StudyCreatedAt = patient.StudyCreatedAt,
+                    StudyUpdatedAt = patient.StudyUpdatedAt,
+                    ServiceId = patient.ServiceId,
+                    ServiceType = patient.ServiceType,
+                    ServiceDescription = patient.ServiceDescription,
+                    ServiceCost = patient.ServiceCost,
+                    ServiceCurrency = patient.ServiceCurrency,
+                    DoctorId = patient.DoctorId,
+                    DoctorName = patient.DoctorFirstName is not null && patient.DoctorLastName is not null ? $"{patient.DoctorFirstName} {patient.DoctorLastName}" : null,
+                });
+            }
+
+            return response;
+        }
+
         public async Task<PatientRegisterResponse?> AddPatient(PatientRegisterRequest request)
         {
             var person = await _unitOfWork.Persons.GetById(request.PersonId, ["Patient"]) ?? throw new NullReferenceException($"Person with id: {request.PersonId} not found!");

@@ -1,0 +1,145 @@
+﻿@{
+    ViewData["Title"] = "Patient Data - VNA Table";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-users me-3"></i>Patient Management System
+            </h1>
+            <p class="lead text-muted">Real-time patient data from RIS API</p>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loadingIndicator" class="row mb-3">
+        <div class="col-12 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading patient data...</p>
+        </div>
+    </div>
+
+    <!-- Error alert -->
+    <div id="errorAlert" class="alert alert-danger d-none" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span id="errorMessage"></span>
+    </div>
+
+    <!-- Statistics row -->
+    <div id="statsRow" class="row mb-3 d-none">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span id="totalCount" class="badge bg-info fs-6">Total Patients: 0</span>
+                    <span id="activeCount" class="badge bg-success fs-6">Active: 0</span>
+                    <span id="vipCount" class="badge bg-warning fs-6">VIP: 0</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary" onclick="loadPatients()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data table -->
+    <div id="tableContainer" class="row d-none">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-table me-2"></i>Patient Details
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                        <div class="table-wrapper" style="min-width: 1400px; overflow-x: auto;">
+                            <table class="table table-hover table-striped mb-0" id="patientsTable">
+                                <thead class="table-dark sticky-top">
+                                    <tr>
+                                        <th scope="col" style="min-width: 120px;">
+                                            <i class="fas fa-id-badge me-1"></i>Person ID
+                                        </th>
+                                        <th scope="col" style="min-width: 200px;">
+                                            <i class="fas fa-user me-1"></i>Patient Name
+                                        </th>
+                                        <th scope="col" style="min-width: 180px;">
+                                            <i class="fas fa-phone me-1"></i>Mobile Number
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-calendar me-1"></i>Date of Birth
+                                        </th>
+                                        <th scope="col" style="min-width: 120px;">
+                                            <i class="fas fa-venus-mars me-1"></i>Gender
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-id-card me-1"></i>SSN
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-id-badge me-1"></i>Patient ID
+                                        </th>
+                                        <th scope="col" style="min-width: 80px;">
+                                            <i class="fas fa-star me-1"></i>VIP
+                                        </th>
+                                        <th scope="col" style="min-width: 120px;">
+                                            <i class="fas fa-toggle-on me-1"></i>Active
+                                        </th>
+                                        <th scope="col" style="min-width: 100px;">
+                                            <i class="fas fa-file-medical me-1"></i>Study ID
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-clock me-1"></i>Study Created
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-edit me-1"></i>Study Updated
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-cog me-1"></i>Service ID
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-tag me-1"></i>Service Type
+                                        </th>
+                                        <th scope="col" style="min-width: 200px;">
+                                            <i class="fas fa-info-circle me-1"></i>Service Description
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-dollar-sign me-1"></i>Service Cost
+                                        </th>
+                                        <th scope="col" style="min-width: 150px;">
+                                            <i class="fas fa-user-md me-1"></i>Doctor ID
+                                        </th>
+                                        <th scope="col" style="min-width: 200px;">
+                                            <i class="fas fa-user-md me-1"></i>Doctor Name
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientsTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No data message -->
+    <div id="noDataMessage" class="row d-none">
+        <div class="col-12">
+            <div class="alert alert-info text-center" role="alert">
+                <i class="fas fa-info-circle fa-3x mb-3"></i>
+                <h4 class="alert-heading">No Patient Data Available</h4>
+                <p>Unable to fetch patient data from the API. Please check if the RIS API is running and accessible.</p>
+                <hr>
+                <button class="btn btn-primary" onclick="loadPatients()">
+                    <i class="fas fa-sync-alt me-2"></i>Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+}

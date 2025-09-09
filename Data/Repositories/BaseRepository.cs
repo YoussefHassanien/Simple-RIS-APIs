@@ -6,6 +6,10 @@ namespace Data.Repositories
     public class BaseRepository<T>(AppDbContext context) : IBaseRepository<T> where T : class
     {
         protected AppDbContext _context = context;
+
+        public async Task<List<T>> GetAll(uint page = 1, uint limit = 10) =>
+            await _context.Set<T>().Skip((int)((page - 1) * limit)).Take((int)limit).ToListAsync();
+
         public async Task<T?> GetById(uint id, string[]? includes = null) 
         {
             IQueryable<T> query = _context.Set<T>();

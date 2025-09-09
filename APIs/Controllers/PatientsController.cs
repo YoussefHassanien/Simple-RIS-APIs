@@ -4,7 +4,6 @@ using Core.DTOs.Patient.Register;
 using Core.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace APIs.Controllers
 {
@@ -16,7 +15,7 @@ namespace APIs.Controllers
         private readonly IPatientService _patientService = patientService;
 
         [HttpGet]
-        [Authorize(Roles = "patient")]
+        [Authorize(Roles= "patient")]
         public async Task<ActionResult<PatientDetailsResponse>> GetPatinetDetails()
         {
             try
@@ -34,6 +33,23 @@ namespace APIs.Controllers
             catch (UnauthorizedAccessException)
             {
                 return Forbid();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("all/details")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PatientDetailsResponse>> GetPatinetsDetails(uint page = 1, uint limit = 10)
+        {
+            try
+            {
+
+                var response = await _patientService.GetPatientsDetails(page, limit);
+
+                return Ok(response);
             }
             catch (Exception)
             {
